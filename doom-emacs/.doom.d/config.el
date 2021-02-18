@@ -64,4 +64,3 @@
 
 ;; (after! git-gutter-fringe
 ;;   (fringe-mode '8))
-(setq +vc-gutter-default-style nil)
