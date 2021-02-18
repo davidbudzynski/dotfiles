@@ -1,2 +1,4 @@
 #+TITLE: Dotfiles
 Generated with [[https://www.gnu.org/software/stow/][GNU Stow]]
+
+Demo of my desktop: [[https://i.imgur.com/oCu8ty0.png]]
