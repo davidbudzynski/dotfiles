@@ -231,6 +231,8 @@ floating_layout = layout.Floating(float_rules=[
     {'wname': 'pinentry'},  # GPG key password entry
     {'wmclass': 'ssh-askpass'},  # ssh-askpass
     # {'wmclass': 'mpv'},  # mpv
+    # firefox closing tab prompt (change?)
+    {'wname': 'Quit and close tabs?'},
 ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"
