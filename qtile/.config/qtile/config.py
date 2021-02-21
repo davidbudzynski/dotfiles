@@ -30,6 +30,7 @@ from libqtile import bar, layout, widget, hook
 from libqtile.config import Click, Drag, Group, Key, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
+from libqtile.widget import CurrentLayoutIcon
 import os
 import subprocess
 
@@ -141,22 +142,26 @@ layouts = [
     layout.MonadTall(
         margin = 5,
         border_width = 2,
-        name = "[]=",
+        # revert to default so the layout icon can work
+        # name = "[]=",
         border_focus = "cc241d",
         border_normal = "#282828"
         ),
     layout.Max(
-        name = "[M]"),
+       # name = "[M]"
+    ),
     # layout.Stack(num_stacks=2),
     # Try more layouts by unleashing below layouts.
     # layout.Bsp(),
     # layout.Columns(),
     # layout.Matrix(),
     layout.MonadWide(
-        name = "TTT"),
+        # name = "TTT"
+    ),
     # layout.RatioTile(),
     layout.Tile(
-        name = 'floating'),
+        # name = 'floating'
+    ),
     # layout.TreeTab(),
     # layout.VerticalTile(),
     # layout.Zoomy(),
@@ -184,20 +189,12 @@ screens = [
                     rounded = False,
                     this_current_screen_border = "#98971a"
                 ),
-                widget.CurrentLayout(),
-                #widget.Prompt(),
+                CurrentLayoutIcon(
+                    scale = 0.7
+                ),
                 widget.WindowName(),
-                #widget.Chord(
-                #   chords_colors={
-                #        'launch': ("#ff0000", "#ffffff"),
-                #    },
-                #    name_transform=lambda name: name.upper(),
-               # ),
-               # widget.TextBox("default config", name="default"),
-               # widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
                 widget.Systray(),
                 widget.Clock(format='%b %d %A %H:%M:%S'),
-               # widget.QuickExit(),
             ],
             24,
         ),
