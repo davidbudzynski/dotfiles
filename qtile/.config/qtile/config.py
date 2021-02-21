@@ -115,7 +115,9 @@ keys = [
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown qtile"),
 
     # toggle the status bar
-    Key([mod], "b", lazy.hide_show_bar(), desc = "toggle the status bar")
+    Key([mod], "b", lazy.hide_show_bar(), desc = "toggle the status bar"),
+
+    Key([mod, "shift"], "f", lazy.window.toggle_fullscreen(), desc = "turn off the bar and go full screen mode"),
 ]
 
 groups = [Group(i) for i in "123456789"]
