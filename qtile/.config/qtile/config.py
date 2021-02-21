@@ -101,7 +101,10 @@ keys = [
     Key(["mod1"], "space", lazy.spawn("rofi -show drun -show-icons -theme-str 'element-icon {size: 2.5ch;}'"), desc="Launch rofi"),
     Key([mod], "e", lazy.spawn(editor), desc="Launch emacs"),
     Key([mod], "w", lazy.spawn(browser), desc="Launch Firefox"),
-    Key([mod], "f", lazy.spawn("alacritty -e ranger"), desc="Launch Ranger"),
+    # Key([mod], "f", lazy.spawn("alacritty -e ranger"), desc="Launch Ranger"),
+    # fix for issues with ranger opening and resizing
+    # described here: https://groups.google.com/g/qtile-dev/c/mjMKB533GNA/m/f0UGhBxpDgAJ
+    Key([mod], "f", lazy.spawn("alacritty -e /home/david/.config/qtile/ranger-startup-fix.sh"), desc="Launch Ranger"),
     Key([mod, "control"], "l", lazy.spawn("/home/david/.config/qtile/lock-and-suspend.sh"), desc="sleep and suspend"),
 
     # Toggle between different layouts as defined below
