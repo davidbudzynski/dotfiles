@@ -187,7 +187,8 @@ screens = [
                     active = "#ebdbb2",
                     highlight_method = "block",
                     rounded = False,
-                    this_current_screen_border = "#98971a"
+                    this_current_screen_border = "#98971a",
+                    use_mouse_wheel = False
                 ),
                 CurrentLayoutIcon(
                     scale = 0.7
