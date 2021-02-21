@@ -196,7 +196,8 @@ screens = [
                 widget.Systray(),
                 widget.Clock(format='%b %d %A %H:%M:%S'),
             ],
-            24,
+            size = 20,
+            opacity = 0.90,
         ),
     ),
 ]
