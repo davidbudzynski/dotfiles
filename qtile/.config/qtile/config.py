@@ -101,10 +101,7 @@ keys = [
     Key(["mod1"], "space", lazy.spawn("rofi -show drun -show-icons -theme-str 'element-icon {size: 2.5ch;}'"), desc="Launch rofi"),
     Key([mod], "e", lazy.spawn(editor), desc="Launch emacs"),
     Key([mod], "w", lazy.spawn(browser), desc="Launch Firefox"),
-    # disabled this becasue either ranger or qtile are not wokring correctly
-    # together - keybinding does not open render ranger in full screen
-    # in alacritty like it should do
-    # Key([mod], "f", lazy.spawn("alacritty -e ranger"), desc="Launch Ranger"),
+    Key([mod], "f", lazy.spawn("alacritty -e ranger"), desc="Launch Ranger"),
     Key([mod, "control"], "l", lazy.spawn("/home/david/.config/qtile/lock-and-suspend.sh"), desc="sleep and suspend"),
 
     # Toggle between different layouts as defined below
