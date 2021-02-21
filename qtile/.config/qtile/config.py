@@ -237,6 +237,7 @@ floating_layout = layout.Floating(float_rules=[
     # {'wmclass': 'mpv'},  # mpv
     # firefox closing tab prompt (change?)
     {'wname': 'Quit and close tabs?'},
+    {'wname': 'Close tabs?'},
 ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"
