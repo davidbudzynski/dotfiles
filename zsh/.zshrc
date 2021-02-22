@@ -113,3 +113,5 @@ source $ZSH/oh-my-zsh.sh
 alias ranger="/home/david/.config/qtile/ranger-startup-fix.sh"
 # requires bat installed on your system
 alias cat=bat
+# requires exa installed on your system
+alias ls=exa
