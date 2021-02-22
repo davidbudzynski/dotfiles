@@ -115,3 +115,6 @@ alias ranger="/home/david/.config/qtile/ranger-startup-fix.sh"
 alias cat=bat
 # requires exa installed on your system
 alias ls=exa
+
+# open magit to deal with git in the terminal
+alias magit='emacsclient -nw -c --eval '"'"'(progn (let ((display-buffer-alist `(("^\\*magit: " display-buffer-same-window) ,display-buffer-alist))) (magit-status)) (delete-other-windows))'"' "
