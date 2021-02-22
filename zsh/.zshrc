@@ -4,7 +4,7 @@ export PATH=$HOME/bin:/usr/local/bin:$PATH
 EDITOR=nvim
 VISUAL=$EDITOR
 export EDITOR VISUAL
-
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # Path to your oh-my-zsh installation.
 export ZSH="/home/david/.oh-my-zsh"
 
