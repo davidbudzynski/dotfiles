@@ -111,3 +111,5 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ranger="/home/david/.config/qtile/ranger-startup-fix.sh"
+# requires bat installed on your system
+alias cat=bat
