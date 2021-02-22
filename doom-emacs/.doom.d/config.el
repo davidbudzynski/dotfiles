@@ -62,5 +62,5 @@
 ;; figure how to set it to this character
 ;; (setq display-fill-column-indicator-character `U+2588)
 
-;; (after! git-gutter-fringe
-;;   (fringe-mode '8))
+(after! git-gutter-fringe
+  (fringe-mode '14))
