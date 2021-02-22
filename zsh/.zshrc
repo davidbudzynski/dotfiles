@@ -117,4 +117,5 @@ alias cat=bat
 alias ls=exa
 
 # open magit to deal with git in the terminal
+# taken from here: https://trycatchchris.co.uk/post/view/Open-Emacs-magit-from-command-line
 alias magit='emacsclient -nw -c --eval '"'"'(progn (let ((display-buffer-alist `(("^\\*magit: " display-buffer-same-window) ,display-buffer-alist))) (magit-status)) (delete-other-windows))'"' "
