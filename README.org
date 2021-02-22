@@ -2,4 +2,5 @@
 Generated with [[https://www.gnu.org/software/stow/][GNU Stow]]
 
 Demo of my desktop:
-[[[[https://i.imgur.com/QevaYoI.png]]]]
+[[https://i.imgur.com/QevaYoI.png]]
+[[https://i.imgur.com/7gAzz7n.png]]
