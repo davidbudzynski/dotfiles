@@ -81,6 +81,7 @@ plugins=(
     zsh-syntax-highlighting
     zsh-autosuggestions
     vi-mode
+    z
 )
 
 source $ZSH/oh-my-zsh.sh
