@@ -168,7 +168,8 @@ layouts = [
 ]
 
 widget_defaults = dict(
-    font = 'Source Code Pro Bold',
+    # font = 'Source Code Pro Bold',
+    font = 'SFMono Nerd Font Mono Bold',
     fontsize = 12,
     padding = 3,
     # atom one dark colorscheme
