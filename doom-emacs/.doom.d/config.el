@@ -59,8 +59,5 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-;; figure how to set it to this character
-;; (setq display-fill-column-indicator-character `U+2588)
-
 (after! git-gutter-fringe
   (fringe-mode '14))
