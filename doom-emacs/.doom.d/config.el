@@ -61,3 +61,7 @@
 
 (after! git-gutter-fringe
   (fringe-mode '14))
+
+;; when using stow or any other dofile version control system, add this so that
+;; doom knows to not throw lining erros in its emacs lisp files
+(add-to-list '+emacs-lisp-disable-flycheck-in-dirs "~/dotfiles/doom-emacs/.doom.d/")
