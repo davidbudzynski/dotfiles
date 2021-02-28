@@ -70,6 +70,9 @@
 (after! elfeed
   (setq elfeed-search-filter "@1-month-ago +unread"))
 
+;;Automatically updating feed when opening elfeed
+(add-hook! 'elfeed-search-mode-hook 'elfeed-update)
+
 (setq elfeed-feeds
       '("https://hnrss.org/frontpage"
         "https://unixsheikh.com/feed.rss"))
