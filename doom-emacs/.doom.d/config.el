@@ -72,4 +72,5 @@
 
 (setq elfeed-feeds
       '("https://hnrss.org/frontpage"
-        "https://unixsheikh.com/feed.rss"))
+        "https://unixsheikh.com/feed.rss"
+        "http://feeds.bbci.co.uk/news/rss.xml"))
