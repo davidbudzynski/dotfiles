@@ -111,7 +111,8 @@
 ;; play the video in mpv
 (defun elfeed-v-mpv (url)
   "Watch a video from URL in MPV"
-  (async-shell-command (format "noglob mpv %s" url)))
+   (start-process "mpv" "*mpv*" "mpv" url))
+  ;; (async-shell-command (format "noglob mpv %s" url)))
 
 (defun elfeed-view-mpv (&optional use-generic-p)
   "Youtube-feed link"
