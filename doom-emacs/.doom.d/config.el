@@ -108,3 +108,20 @@
 
 (define-key elfeed-search-mode-map (kbd "d") 'elfeed-youtube-dl)
 
+;; play the video in mpv
+(defun elfeed-v-mpv (url)
+  "Watch a video from URL in MPV"
+  (async-shell-command (format "noglob mpv %s" url)))
+
+(defun elfeed-view-mpv (&optional use-generic-p)
+  "Youtube-feed link"
+  (interactive "P")
+  (let ((entries (elfeed-search-selected)))
+    (cl-loop for entry in entries
+     do (elfeed-untag entry 'unread)
+     when (elfeed-entry-link entry)
+     do (elfeed-v-mpv it))
+   (mapc #'elfeed-search-update-entry entries)
+   (unless (use-region-p) (forward-line))))
+
+(define-key elfeed-search-mode-map (kbd "v") 'elfeed-view-mpv)
