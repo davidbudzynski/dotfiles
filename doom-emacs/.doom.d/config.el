@@ -66,6 +66,9 @@
 ;; doom knows to not throw lining erros in its emacs lisp files
 (add-to-list '+emacs-lisp-disable-flycheck-in-dirs "~/dotfiles/doom-emacs/.doom.d/")
 
+;; by default show articles from a month back
+(after! elfeed
+  (setq elfeed-search-filter "@1-month-ago +unread"))
 
 (setq elfeed-feeds
       '("https://hnrss.org/frontpage"
