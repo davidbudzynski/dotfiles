@@ -88,3 +88,23 @@
 ;;     (start-process "mpv" "*mpv*" "mpv" url))
 ;; (setq browse-url-browser-function '(("https:\\/\\/www\\.youtube." . browse-url-mpv)
 ;;                                     ("." . browse-url-firefox)))
+
+;; download the video in elfeed using youtube-dl
+(defun yt-dl-it (url)
+  "Downloads the URL in an async shell"
+  (let ((default-directory "~/Videos"))
+    (async-shell-command (format "noglob youtube-dl %s" url))))
+
+(defun elfeed-youtube-dl (&optional use-generic-p)
+  "Youtube-DL link"
+  (interactive "P")
+  (let ((entries (elfeed-search-selected)))
+    (cl-loop for entry in entries
+             do (elfeed-untag entry 'unread)
+             when (elfeed-entry-link entry)
+             do (yt-dl-it it))
+    (mapc #'elfeed-search-update-entry entries)
+    (unless (use-region-p) (forward-line))))
+
+(define-key elfeed-search-mode-map (kbd "d") 'elfeed-youtube-dl)
+
