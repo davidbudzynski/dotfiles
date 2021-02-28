@@ -79,3 +79,8 @@
 (setq elfeed-feeds
       '("https://hnrss.org/frontpage"
         "https://unixsheikh.com/feed.rss"))
+(defun browse-url-mpv (url &optional new-window)
+    (start-process "mpv" "*mpv*" "mpv" url))
+
+(setq browse-url-browser-function '(("https:\\/\\/www\\.youtube." . browse-url-mpv)
+    ("." . browse-url-firefox)))
