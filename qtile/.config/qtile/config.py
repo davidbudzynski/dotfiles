@@ -72,9 +72,9 @@ keys = [
         desc = "move window up in current stack"),
 
     # customize window sizes
-    Key([mod], "i", lazy.layout.grow(),
+    Key([mod], "equal", lazy.layout.grow(),
         desc = "increase size of window in focus"),
-    Key([mod], "m", lazy.layout.shrink(),
+    Key([mod], "minus", lazy.layout.shrink(),
         desc = "decrease size of window in focus"),
     Key([mod], "n", lazy.layout.reset(),
         desc = "reset window sized back to default"),
