@@ -111,6 +111,7 @@ keys = [
     # described here: https://groups.google.com/g/qtile-dev/c/mjMKB533GNA/m/f0UGhBxpDgAJ
     Key([mod], "f", lazy.spawn("alacritty -e /home/david/.config/qtile/ranger-startup-fix.sh"), desc="Launch Ranger"),
     Key([mod, "control"], "l", lazy.spawn("/home/david/.config/qtile/lock-and-suspend.sh"), desc="sleep and suspend"),
+    Key([], "Print", lazy.spawn("flameshot gui"), desc="take a screenshot"),
 
     # Toggle between different layouts as defined below
     Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
