@@ -47,6 +47,10 @@ terminal = 'alacritty'
 browser = "firefox"
 editor = "emacsclient -n -c -a emacs"
 
+# some keys like + or - have to be described in python usigng pyglet.window.key
+# described here:
+# https://pythonhosted.org/pyglet/api/pyglet.window.key-module.html
+
 keys = [
     # this toggles the floating / tiling window mode
     # Key([mod], "n", lazy.window.toggle_floating()),
