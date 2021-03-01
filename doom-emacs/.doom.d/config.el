@@ -79,7 +79,8 @@
 (setq elfeed-feeds
       '("https://hnrss.org/frontpage"
         "https://unixsheikh.com/feed.rss"
-        "https://www.youtube.com/feeds/videos.xml?channel_id=UC7YOGHUfC1Tb6E4pudI9STA"))
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UC7YOGHUfC1Tb6E4pudI9STA"
+        "https://irreal.org/blog/?feed=rss2"))
 
 ;; open any link with youtube in the url in mpv
 ;; this prevents from opening the link in a browser
