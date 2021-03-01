@@ -25,8 +25,7 @@
 # SOFTWARE.
 
 from typing import List  # noqa: F401
-
-from libqtile import bar, layout, widget, hook
+from libqtile import bar, layout, widget, hook, qtile
 from libqtile.config import Click, Drag, Group, Key, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
@@ -201,7 +200,10 @@ screens = [
                 ),
                 widget.WindowName(),
                 widget.Systray(),
-                widget.Clock(format='%b %d %A %H:%M:%S'),
+                widget.Clock(
+                    format = '%b %d %A %H:%M:%S',
+                    mouse_callbacks = {"Button1": lambda: qtile.cmd_spawn("alacritty -e cal -3")}
+                ),
             ],
             size = 23,
             opacity = 0.90,
