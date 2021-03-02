@@ -92,7 +92,7 @@
         ;; DistroTube YT
         ("https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg" yt tech linux)
         ;; SyntaxFM podcast
-        ("http://feed.syntax.fm/rss" podcast web-dev)
+        ("http://feed.syntax.fm/rss" podcast tech web-dev)
         ))
 
 ;; open any link with youtube in the url in mpv
