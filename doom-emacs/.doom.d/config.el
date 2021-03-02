@@ -69,9 +69,9 @@
 ;; enable visual enhancements for elfeed
 (elfeed-goodies/setup)
 
-;; by default show articles from a month back
+;; by default show articles from two weeks back
 (after! elfeed
-  (setq elfeed-search-filter "@1-month-ago +unread"))
+  (setq elfeed-search-filter "@2-weeks-ago +unread"))
 
 ;;Automatically updating feed when opening elfeed
 (add-hook! 'elfeed-search-mode-hook 'elfeed-update)
