@@ -77,10 +77,11 @@
 (add-hook! 'elfeed-search-mode-hook 'elfeed-update)
 
 (setq elfeed-feeds
-      '("https://hnrss.org/frontpage"
-        "https://unixsheikh.com/feed.rss"
-        "https://www.youtube.com/feeds/videos.xml?channel_id=UC7YOGHUfC1Tb6E4pudI9STA"
-        "https://irreal.org/blog/?feed=rss2"))
+      '(("https://hnrss.org/frontpage" news)
+        ("https://unixsheikh.com/feed.rss" blog BSD)
+        ("https://www.youtube.com/feeds/videos.xml?channel_id=UC7YOGHUfC1Tb6E4pudI9STA" yt tech linux)
+        ("https://irreal.org/blog/?feed=rss2" blog emacs)
+        ("https://www.youtube.com/feeds/videos.xml?channel_id=UCld68syR8Wi-GY_n4CaoJGA" yt tech linux)))
 
 ;; open any link with youtube in the url in mpv
 ;; this prevents from opening the link in a browser
