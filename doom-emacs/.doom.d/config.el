@@ -97,6 +97,8 @@
         ("https://lexfridman.com/feed/podcast/" podcast tech)
         ;; System Crafters YT
         ("https://www.youtube.com/feeds/videos.xml?channel_id=UCAiiOTio8Yu69c3XnR7nQBQ" emacs tech yt)
+        ;; Arch Linux Latest News
+        ("https://archlinux.org/feeds/news/" linux news tech)
         ))
 
 ;; open any link with youtube in the url in mpv
