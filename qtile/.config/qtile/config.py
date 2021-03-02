@@ -200,7 +200,7 @@ screens = [
                 widget.Systray(),
                 widget.Clock(
                     format = '%b %d %A %H:%M:%S',
-                    mouse_callbacks = {"Button1": lambda: qtile.cmd_spawn("alacritty -e cal -3")}
+                    mouse_callbacks = {"Button1": lambda: qtile.cmd_spawn("emacs -nw --eval '(progn (calendar))'")}
                 ),
             ],
             size = 23,
