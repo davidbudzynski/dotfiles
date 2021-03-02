@@ -86,6 +86,9 @@
         ;; Irreal
         ("https://irreal.org/blog/?feed=rss2" blog emacs)
         ;; Broadie Robertson YT
+        ("https://www.youtube.com/feeds/videos.xml?channel_id=UCld68syR8Wi-GY_n4CaoJGA" yt tech linux))
+        ;; Luke Smith YT
+        ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA" yt tech linux))
 
 ;; open any link with youtube in the url in mpv
 ;; this prevents from opening the link in a browser
