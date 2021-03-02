@@ -90,7 +90,10 @@
         ;; Luke Smith YT
         ("https://www.youtube.com/feeds/videos.xml?channel_id=UC2eYFnH61tmytImy1mTYvhA" yt tech linux)
         ;; DistroTube YT
-        ("https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg" yt tech linux)))
+        ("https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg" yt tech linux)
+        ;; SyntaxFM podcast
+        ("http://feed.syntax.fm/rss" podcast web-dev)
+        ))
 
 ;; open any link with youtube in the url in mpv
 ;; this prevents from opening the link in a browser
