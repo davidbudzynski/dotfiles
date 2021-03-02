@@ -93,6 +93,8 @@
         ("https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg" yt tech linux)
         ;; SyntaxFM podcast
         ("http://feed.syntax.fm/rss" podcast tech web-dev)
+        ;; Lex Fridman podcast
+        ("https://lexfridman.com/feed/podcast/" podcast tech)
         ))
 
 ;; open any link with youtube in the url in mpv
