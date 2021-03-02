@@ -77,11 +77,15 @@
 (add-hook! 'elfeed-search-mode-hook 'elfeed-update)
 
 (setq elfeed-feeds
+        ;; hacker news
       '(("https://hnrss.org/frontpage" news)
+        ;; unix sheikh
         ("https://unixsheikh.com/feed.rss" blog BSD)
+        ;; mental outlaw YT
         ("https://www.youtube.com/feeds/videos.xml?channel_id=UC7YOGHUfC1Tb6E4pudI9STA" yt tech linux)
+        ;; Irreal
         ("https://irreal.org/blog/?feed=rss2" blog emacs)
-        ("https://www.youtube.com/feeds/videos.xml?channel_id=UCld68syR8Wi-GY_n4CaoJGA" yt tech linux)))
+        ;; Broadie Robertson YT
 
 ;; open any link with youtube in the url in mpv
 ;; this prevents from opening the link in a browser
