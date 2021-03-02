@@ -99,6 +99,8 @@
         ("https://www.youtube.com/feeds/videos.xml?channel_id=UCAiiOTio8Yu69c3XnR7nQBQ" emacs tech yt)
         ;; Arch Linux Latest News
         ("https://archlinux.org/feeds/news/" linux news tech)
+        ;; FreeBSD News
+        ("https://www.freebsd.org/news/feed.xml" BSD news)
         ))
 
 ;; open any link with youtube in the url in mpv
