@@ -26,7 +26,7 @@
 
 from typing import List  # noqa: F401
 from libqtile import bar, layout, widget, hook, qtile
-from libqtile.config import Click, Drag, Group, Key, Screen
+from libqtile.config import Click, Drag, Group, Key, Screen, ScratchPad, DropDown
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 from libqtile.widget import CurrentLayoutIcon
@@ -139,6 +139,23 @@ for i in groups:
         # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
         #     desc="move focused window to group {}".format(i.name)),
     ])
+
+# Scratchpad
+groups.append(
+    ScratchPad(
+        "scratchpad",
+        [DropDown(
+            "term",
+            "alacritty",
+            on_focus_lost_hide = True,
+            height = 0.65,
+            opacity = 0.95
+            ),
+        ]
+    ),
+)
+
+keys.extend([Key([], 'F12', lazy.group['scratchpad'].dropdown_toggle("term")),])
 
 layouts = [
     layout.MonadTall(
