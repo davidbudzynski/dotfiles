@@ -148,3 +148,6 @@
    (unless (use-region-p) (forward-line))))
 
 (define-key elfeed-search-mode-map (kbd "v") 'elfeed-view-mpv)
+
+;; disable quit prompt
+(setq confirm-kill-emacs nil)
