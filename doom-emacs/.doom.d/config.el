@@ -151,3 +151,6 @@
 
 ;; disable quit prompt
 (setq confirm-kill-emacs nil)
+
+;; disable autosave
+(setq auto-save-default nil)
