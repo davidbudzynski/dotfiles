@@ -187,3 +187,13 @@
 ;; make sure that ispell language gets picked up correctly.
 ;; sometimes it doesn't work out of the box when the selected locale is the UK
 (setq ispell-dictionary "en")
+
+;; modeline
+;; I expect most of the documents I work on to be UTF - 8, So I don’t want to
+;; see that taking up space unless the encoding is something different
+(defun doom-modeline-conditional-buffer-encoding ()
+  (setq-local doom-modeline-buffer-encoding
+              (unless (or (eq buffer-file-coding-system 'utf-8-unix)
+                          (eq buffer-file-coding-system 'utf-8)))))
+
+(add-hook 'after-change-major-mode-hook #'doom-modeline-conditional-buffer-encoding)
