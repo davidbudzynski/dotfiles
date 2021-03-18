@@ -161,6 +161,7 @@
              mac-option-modifier       'alt
              mac-right-option-modifier 'alt)))
 
+
 ;; styling the appearance of the org buffer to my liking.
 ;; borrowed many parts from https://www.grszkth.fr/blog/doom-config/
 (defun davids-org-mode-visual()
