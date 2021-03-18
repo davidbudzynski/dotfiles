@@ -154,3 +154,9 @@
 
 ;; disable autosave
 (setq auto-save-default nil)
+
+;; in case using emacs on a mac
+(cond (IS-MAC
+       (setq mac-command-modifier      'meta
+             mac-option-modifier       'alt
+             mac-right-option-modifier 'alt)))
