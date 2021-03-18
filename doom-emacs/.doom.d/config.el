@@ -160,3 +160,6 @@
        (setq mac-command-modifier      'meta
              mac-option-modifier       'alt
              mac-right-option-modifier 'alt)))
+
+;; disable electric mode which creates annoying indentation in org-mode
+(add-hook! org-mode (electric-indent-local-mode -1))
