@@ -161,5 +161,25 @@
              mac-option-modifier       'alt
              mac-right-option-modifier 'alt)))
 
+;; styling the appearance of the org buffer to my liking.
+;; borrowed many parts from https://www.grszkth.fr/blog/doom-config/
+(defun davids-org-mode-visual()
+  (setq visual-fill-column-width 100
+        display-fill-column-indicator nil
+        ;; visual-fill-column-center-text t
+        display-line-numbers nil)
+  (visual-fill-column-mode 1))
+
+(after! org
+  (setq ;;org-startup-folded 'overview
+   org-ellipsis " ▾ "
+   org-log-into-drawer 't
+   org-log-done 'time
+   org-log-done 'note
+   ))
+
+(add-hook! 'org-mode-hook
+            #'davids-org-mode-visual)
+
 ;; disable electric mode which creates annoying indentation in org-mode
 (add-hook! org-mode (electric-indent-local-mode -1))
