@@ -183,3 +183,7 @@
 
 ;; disable electric mode which creates annoying indentation in org-mode
 (add-hook! org-mode (electric-indent-local-mode -1))
+
+;; make sure that ispell language gets picked up correctly.
+;; sometimes it doesn't work out of the box when the selected locale is the UK
+(setq ispell-dictionary "en")
