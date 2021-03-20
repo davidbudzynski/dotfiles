@@ -176,8 +176,11 @@
    org-ellipsis " ▾ "
    org-log-into-drawer 't
    org-log-done 'time
-   org-log-done 'note
-   ))
+   org-log-done 'note)
+  ;; ignore popup rule for source code mode in org (usually opens in a small
+  ;; popup at the bottom of the screen). This will open in as a normal split
+  ;; buffer (usually to the right of the original buffer)
+  (set-popup-rule! "^ ?\\*Org Src[* ]" :ignore t))
 
 (add-hook! 'org-mode-hook
             #'davids-org-mode-visual)
@@ -212,3 +215,5 @@
 
 ;; Increase Doom's default max number of delimiters of 3 to something more realistic
 (setq rainbow-delimiters-max-face-count 6)
+
+
