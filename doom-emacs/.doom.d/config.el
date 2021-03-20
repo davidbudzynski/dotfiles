@@ -198,3 +198,8 @@
                           (eq buffer-file-coding-system 'utf-8)))))
 
 (add-hook 'after-change-major-mode-hook #'doom-modeline-conditional-buffer-encoding)
+
+;; remove the asci dashboard banner
+;; (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
+;; remove the footer with link to doom's github page
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
