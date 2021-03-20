@@ -251,3 +251,12 @@
   (setq comint-move-point-for-output t)
   ;; ESS buffers should not be cleaned up automatically
   (add-hook 'inferior-ess-mode-hook #'doom-mark-buffer-as-real-h))
+
+;; get rid of sometimes annoying evil undo removing too much
+(setq evil-want-fine-undo t
+      ;; set undo linmit to 80Mb
+      undo-limit 80000000)
+;; take new window space from all other windows (not just current)
+(setq-default window-combination-resize t
+              ;; Stretch cursor to the glyph width
+              x-stretch-cursor t)
