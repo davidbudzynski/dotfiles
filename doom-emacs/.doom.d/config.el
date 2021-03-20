@@ -203,3 +203,10 @@
 ;; (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
 ;; remove the footer with link to doom's github page
 (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
+
+;; use magit-delta to show diff in magit (requires delta installed on yous system)
+;; Use M-x magit-delta-mode to toggle between using delta, and normal magit
+;; behavior
+;; to activate automatically use this code:
+;;(add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1))
+
