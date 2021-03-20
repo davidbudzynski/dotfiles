@@ -216,4 +216,38 @@
 ;; Increase Doom's default max number of delimiters of 3 to something more realistic
 (setq rainbow-delimiters-max-face-count 6)
 
+;; ESS
 
+;; enrable rainbow delimeters in R
+(after! ess
+  (add-hook! 'prog-mode-hook #'rainbow-delimiters-mode)
+  ;; We don’t want R evaluation to hang the editor
+  (setq ess-eval-visibly 'nowait)
+  ;; enable syntax highlighing in R
+  (setq ess-R-font-lock-keywords
+        '((ess-R-fl-keyword:keywords . t)
+          (ess-R-fl-keyword:constants . t)
+          (ess-R-fl-keyword:modifiers . t)
+          (ess-R-fl-keyword:fun-defs . t)
+          (ess-R-fl-keyword:assign-ops . t)
+          (ess-R-fl-keyword:%op% . t)
+          (ess-fl-keyword:fun-calls . t)
+          (ess-fl-keyword:numbers . t)
+          (ess-fl-keyword:operators . t)
+          ;; (ess-fl-keyword:delimiters . t) ;; don't want this bc we have rainbow delimiters
+          (ess-fl-keyword:= . t)
+          (ess-R-fl-keyword:F&T . t)))
+  ;; If I use LSP it is better to let LSP handle lintr. See example in
+  ;; https://github.com/hlissner/doom-emacs/issues/2606.
+  ;; (setq! ess-use-flymake nil)
+  ;; (setq! lsp-ui-doc-enable nil
+  ;;       lsp-ui-doc-delay 1.5)
+  ;; Follow tidyverse style guide
+  (setq
+   ess-style 'RStudio
+   ess-offset-continued 2
+   ess-expression-offset 0)
+  ;; move to the end of the output when evaluating code
+  (setq comint-move-point-for-output t)
+  ;; ESS buffers should not be cleaned up automatically
+  (add-hook 'inferior-ess-mode-hook #'doom-mark-buffer-as-real-h))
