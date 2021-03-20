@@ -210,3 +210,5 @@
 ;; to activate automatically use this code:
 ;;(add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1))
 
+;; Increase Doom's default max number of delimiters of 3 to something more realistic
+(setq rainbow-delimiters-max-face-count 6)
