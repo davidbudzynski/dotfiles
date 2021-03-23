@@ -176,8 +176,11 @@
    org-ellipsis " ▾ "
    org-log-into-drawer 't
    org-log-done 'time
-   org-log-done 'note
-   ))
+   org-log-done 'note)
+  ;; ignore popup rule for source code mode in org (usually opens in a small
+  ;; popup at the bottom of the screen). This will open in as a normal split
+  ;; buffer (usually to the right of the original buffer)
+  (set-popup-rule! "^ ?\\*Org Src[* ]" :ignore t))
 
 (add-hook! 'org-mode-hook
             #'davids-org-mode-visual)
@@ -198,3 +201,62 @@
                           (eq buffer-file-coding-system 'utf-8)))))
 
 (add-hook 'after-change-major-mode-hook #'doom-modeline-conditional-buffer-encoding)
+
+;; remove the asci dashboard banner
+;; (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
+;; remove the footer with link to doom's github page
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
+
+;; use magit-delta to show diff in magit (requires delta installed on yous system)
+;; Use M-x magit-delta-mode to toggle between using delta, and normal magit
+;; behavior
+;; to activate automatically use this code:
+;;(add-hook 'magit-mode-hook (lambda () (magit-delta-mode +1))
+
+;; Increase Doom's default max number of delimiters of 3 to something more realistic
+(setq rainbow-delimiters-max-face-count 6)
+
+;; ESS
+
+;; enrable rainbow delimeters in R
+(after! ess
+  (add-hook! 'prog-mode-hook #'rainbow-delimiters-mode)
+  ;; We don’t want R evaluation to hang the editor
+  (setq ess-eval-visibly 'nowait)
+  ;; enable syntax highlighing in R
+  (setq ess-R-font-lock-keywords
+        '((ess-R-fl-keyword:keywords . t)
+          (ess-R-fl-keyword:constants . t)
+          (ess-R-fl-keyword:modifiers . t)
+          (ess-R-fl-keyword:fun-defs . t)
+          (ess-R-fl-keyword:assign-ops . t)
+          (ess-R-fl-keyword:%op% . t)
+          (ess-fl-keyword:fun-calls . t)
+          (ess-fl-keyword:numbers . t)
+          (ess-fl-keyword:operators . t)
+          ;; (ess-fl-keyword:delimiters . t) ;; don't want this bc we have rainbow delimiters
+          (ess-fl-keyword:= . t)
+          (ess-R-fl-keyword:F&T . t)))
+  ;; If I use LSP it is better to let LSP handle lintr. See example in
+  ;; https://github.com/hlissner/doom-emacs/issues/2606.
+  ;; (setq! ess-use-flymake nil)
+  ;; (setq! lsp-ui-doc-enable nil
+  ;;       lsp-ui-doc-delay 1.5)
+  ;; Follow tidyverse style guide
+  (setq
+   ess-style 'RStudio
+   ess-offset-continued 2
+   ess-expression-offset 0)
+  ;; move to the end of the output when evaluating code
+  (setq comint-move-point-for-output t)
+  ;; ESS buffers should not be cleaned up automatically
+  (add-hook 'inferior-ess-mode-hook #'doom-mark-buffer-as-real-h))
+
+;; get rid of sometimes annoying evil undo removing too much
+(setq evil-want-fine-undo t
+      ;; set undo linmit to 80Mb
+      undo-limit 80000000)
+;; take new window space from all other windows (not just current)
+(setq-default window-combination-resize t
+              ;; Stretch cursor to the glyph width
+              x-stretch-cursor t)
