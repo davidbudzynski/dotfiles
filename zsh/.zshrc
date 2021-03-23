@@ -124,3 +124,6 @@ alias magit='emacsclient -nw -c --eval '"'"'(progn (let ((display-buffer-alist `
 alias mkdir='mkdir -p -v'
 # stop ping after 5 responses
 alias ping='ping -c 5'
+# prompt  once before removing more than three files, or when removing
+# recursively
+alias rm='rm -I'
