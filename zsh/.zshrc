@@ -122,3 +122,5 @@ alias ls=exa
 alias magit='emacsclient -nw -c --eval '"'"'(progn (let ((display-buffer-alist `(("^\\*magit: " display-buffer-same-window) ,display-buffer-alist))) (magit-status)) (delete-other-windows))'"' "
 # let create nested folders and inform about created files
 alias mkdir='mkdir -p -v'
+# stop ping after 5 responses
+alias ping='ping -c 5'
