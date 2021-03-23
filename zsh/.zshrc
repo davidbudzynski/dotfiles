@@ -1,6 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+# add doom emacs path to invoke doom comand from anywhere
+export PATH="$HOME/.emacs.d/bin:$PATH"
+
 EDITOR=nvim
 VISUAL=$EDITOR
 export EDITOR VISUAL
