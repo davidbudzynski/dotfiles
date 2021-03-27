@@ -260,3 +260,8 @@
 (setq-default window-combination-resize t
               ;; Stretch cursor to the glyph width
               x-stretch-cursor t)
+
+;; use bash for tramp mode because using zsh will make it hang 
+(eval-after-load 'tramp '(setenv "SHELL" "/bin/bash"))
+
+
