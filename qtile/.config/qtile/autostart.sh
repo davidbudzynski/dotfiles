@@ -23,3 +23,5 @@ dunst &
 emacs --daemon &
 # conky system monitor
 conky &
+# music player daemon
+mpd &
