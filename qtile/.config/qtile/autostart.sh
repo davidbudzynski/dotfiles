@@ -25,3 +25,7 @@ emacs --daemon &
 conky &
 # music player daemon
 mpd &
+# playerctl daemon (to enable play/pause with media keys)
+playerctld daemon
+# enable changing play/pause for mpd clients
+mpDris2 &
