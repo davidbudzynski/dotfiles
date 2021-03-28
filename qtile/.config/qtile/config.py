@@ -194,8 +194,8 @@ widget_defaults = dict(
     # atom one dark colorscheme
     # background = "#282C34",
     # foreground = "#ABB2BF",
-    background = "#282828",
-    foreground = "#ebdbb2",
+    background = "#282A36",
+    foreground = "#F8F8F2",
 )
 extension_defaults = widget_defaults.copy()
 
@@ -204,10 +204,11 @@ screens = [
         top=bar.Bar(
             [
                 widget.GroupBox(
-                    active = "#ebdbb2",
+                    active = "#F8F8F2",
+                    inactive = "#44475A",
                     highlight_method = "block",
                     rounded = False,
-                    this_current_screen_border = "#98971a",
+                    this_current_screen_border = "#BD93F9",
                     use_mouse_wheel = False
                 ),
                 CurrentLayoutIcon(
