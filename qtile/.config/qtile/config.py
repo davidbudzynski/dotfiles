@@ -216,6 +216,12 @@ screens = [
                 ),
                 widget.WindowName(),
                 widget.Systray(),
+                widget.Volume(
+                    fmt="vol: {}",
+                    mute_command = "amixer -D pulse sset Master toggle", 
+                    volume_app="pavucontrol",
+                    get_volume_command= 'amixer -D pulse get Master'.split()
+                    ),
                 widget.Clock(
                     format = '%b %d %A %H:%M:%S',
                     # mouse_callbacks = {"Button1": lambda: qtile.cmd_spawn("alacritty -e emacs -nw --eval '(progn (calendar))'")}
