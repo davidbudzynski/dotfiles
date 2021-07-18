@@ -88,6 +88,10 @@ keys = [
     Key([mod], "Tab", lazy.layout.next(),
         desc="Switch window focus to other pane(s) of stack"),
 
+    # media keys
+    Key([], "XF86AudioRaiseVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ +2%")),
+    Key([], "XF86AudioLowerVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ -2%")),
+
     # Swap panes of split stack
     # Key([mod, "shift"], "space", lazy.layout.rotate(),
     #    desc="Swap panes of split stack"),
