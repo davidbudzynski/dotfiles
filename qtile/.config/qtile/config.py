@@ -217,7 +217,7 @@ screens = [
                 widget.WindowName(),
                 widget.Systray(),
                 widget.Volume(
-                    fmt="vol: {}",
+                    fmt="\U0001f50a {}", #speaker emoji and percentage
                     mute_command = "amixer -D pulse sset Master toggle", 
                     volume_app="pavucontrol",
                     get_volume_command= "amixer -D pulse get Master".split(),
