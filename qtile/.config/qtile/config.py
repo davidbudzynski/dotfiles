@@ -220,7 +220,9 @@ screens = [
                     fmt="vol: {}",
                     mute_command = "amixer -D pulse sset Master toggle", 
                     volume_app="pavucontrol",
-                    get_volume_command= 'amixer -D pulse get Master'.split()
+                    get_volume_command= "amixer -D pulse get Master".split(),
+                    volume_up_command = "pactl set-sink-volume @DEFAULT_SINK@ +2%",
+                    volume_down_command = "pactl set-sink-volume @DEFAULT_SINK@ -2%"
                     ),
                 widget.Clock(
                     format = '%b %d %A %H:%M:%S',
