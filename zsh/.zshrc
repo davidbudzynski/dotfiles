@@ -1,21 +1,24 @@
+export fpath=($ZSH/custom/plugins/zsh-completions/src $fpath)
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
-
+# export PATH="$HOME/.local/bin"
 # add doom emacs path to invoke doom comand from anywhere
 export PATH="$HOME/.emacs.d/bin:$PATH"
-
+# add pip to PATH
+export PATH="$HOME/.local/bin:$PATH"
 EDITOR=nvim
 VISUAL=$EDITOR
 export EDITOR VISUAL
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # Path to your oh-my-zsh installation.
-export ZSH="/home/david/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="bira"
+
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -80,21 +83,28 @@ ZSH_THEME="bira"
 plugins=(
     git
     extract
-    zsh-completions
+    # zsh-completions
     zsh-syntax-highlighting
     zsh-autosuggestions
     vi-mode
     z
+    fzf-tab
+    # emacs
+    # tmux # aliases for tmux
 )
 
 source $ZSH/oh-my-zsh.sh
+
+# vi-mode plugin specific settins
+VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+VI_MODE_SET_CURSOR=true
 
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -117,9 +127,9 @@ source $ZSH/oh-my-zsh.sh
 alias ranger="/home/david/.config/qtile/ranger-startup-fix.sh"
 # requires bat installed on your system
 alias cat=bat
-# requires exa installed on your system
-alias ls=exa
-
+# exa is deprecated and no longer maintained, use eza instead or go back to the
+# good old ls  
+alias ls=eza
 # open magit to deal with git in the terminal
 # taken from here: https://trycatchchris.co.uk/post/view/Open-Emacs-magit-from-command-line
 alias magit='emacsclient -nw -c --eval '"'"'(progn (let ((display-buffer-alist `(("^\\*magit: " display-buffer-same-window) ,display-buffer-alist))) (magit-status)) (delete-other-windows))'"' "
@@ -138,3 +148,4 @@ alias chown='chown --preserve-root'
 alias chmod='chmod --preserve-root'
 alias chgrp='chgrp --preserve-root'
 alias R='R --quiet --no-save --no-restore'
+alias rubyserver='ruby -run -e httpd . -p 8000'
