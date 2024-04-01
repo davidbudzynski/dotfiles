@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: jekyll-frontmatter
+# key: /jekyll
+# --
+#+begin_export html
+---
+layout: ${1:post}
+title: "$2"
+date: `(format-time-string "%Y-%m-%d %H:%m")`
+category: ${3:general}
+---
+#+end_export
+$0
