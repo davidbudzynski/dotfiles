@@ -30,9 +30,11 @@ family = "Cascadia Code"
 style = "Medium"
 
 
-[shell]
+[terminal.shell]
 args = ["--login", "-c", "tmux attach || tmux"]
 program = "/bin/zsh"
 
 [window]
 opacity = 1
+
+[terminal]
