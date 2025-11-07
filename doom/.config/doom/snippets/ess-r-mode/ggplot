@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: ggplot(data, aes)
+# key: ggp
+# binding: direct-keybinding
+# expand-env: ((yas-indent-line 'fixed))
+# --
+ggplot($1aes($2)) +
+  geom_$3$0

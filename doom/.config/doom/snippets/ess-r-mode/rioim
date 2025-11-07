@@ -1,0 +1,5 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: import
+# key: rio
+# --
+rio::import("$1") %>% tibble::as_tibble()

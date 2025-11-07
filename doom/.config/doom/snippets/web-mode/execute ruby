@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: execute ruby
+# key: e
+# --
+<% ${code} %>
