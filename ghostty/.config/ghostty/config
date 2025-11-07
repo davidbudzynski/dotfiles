@@ -1,0 +1,46 @@
+# font-family=SFMono
+# font-size=18
+window-decoration = false
+# gtk-adwaita = false
+gtk-titlebar = false
+theme = iTerm2 Dark Background
+# window-padding-x = 0
+
+# Vertical window padding. This applies padding between the terminal cells and
+# the top and bottom window borders. The value is in points, meaning that it
+# will be scaled appropriately for screen DPI.
+# 
+# If this value is set too large, the screen will render nothing, because the
+# grid will be completely squished by the padding. It is up to you as the user
+# to pick a reasonable value. If you pick an unreasonable value, a warning
+# will appear in the logs.
+# 
+# Changing this configuration at runtime will only affect new terminals,
+# i.e. new windows, tabs, etc.
+# 
+# To set a different top and bottom padding, specify two numerical values
+# separated by a comma. For example, `window-padding-y = 2,4` will set the
+# top padding to 2 and the bottom padding to 4. If you want to set both
+# paddings to the same value, you can use a single value. For example,
+# `window-padding-y = 2` will set both paddings to 2.
+window-padding-y = 1
+window-padding-balance=true
+
+# disable the quit prompt from appearing when quitting the terminal.
+confirm-close-surface = false
+
+# The following command checks if tmux is installed.
+# If tmux is installed, it automatically attaches to an existing tmux session.
+# If no tmux session exists, a new one is created.
+# If tmux is not installed, it simply starts zsh without tmux.
+#
+# For this to work properly, you need to make sure that your shell is configured
+# for homebrew, so you should have this line:
+# eval "$(/opt/homebrew/bin/brew shellenv)"
+# In your ~/.zprofile file
+# If you don't have that line, or if the file doesn't exist, run this:
+# echo '' >>~/.zprofile && echo '# Configure shell for brew' >>~/.zprofile && echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>~/.zprofile && eval "$(/opt/homebrew/bin/brew shellenv)"
+#
+# This assumes you installed tmux through brew if using macos
+command = zsh --login -c "if command -v tmux >/dev/null 2>&1; then tmux attach || tmux; else zsh; fi"
+
