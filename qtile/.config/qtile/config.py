@@ -26,8 +26,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from posixpath import expanduser
-from typing import List  # noqa: F401
 from libqtile import bar, layout, widget, hook, qtile
 from libqtile.config import (
     Click,
@@ -41,13 +39,12 @@ from libqtile.config import (
     Match,
 )
 from libqtile.lazy import lazy
-from libqtile.utils import guess_terminal
-from libqtile.widget import CurrentLayoutIcon
-import os, subprocess, psutil
+from libqtile.widget import CurrentLayout
+import os
+import subprocess
+
 
 # startup apps
-
-
 @hook.subscribe.startup_once
 def autostart():
     autostart_path = os.path.expanduser("~/.config/qtile/autostart.sh")
@@ -82,7 +79,7 @@ def autostart():
 
 
 mod = "mod4"
-terminal = "alacritty"
+terminal = "ghostty"
 browser = "firefox-developer-edition"
 # editor = "emacsclient -n -c -a emacs"
 editor = "code"
@@ -207,9 +204,9 @@ keys = [
     # )
     Key(
         [mod],
-        "f", 
+        "f",
         lazy.spawn("wezterm -e yazi"),
-        desc = "Launch yazi (better ranger alternative) in wezterm (perhaps better default terminal alternative)"
+        desc="Launch yazi (better ranger alternative) in wezterm (perhaps better default terminal alternative)",
     ),
     Key(
         [mod, "control"],
@@ -314,8 +311,8 @@ workspaces = [
     # {"name": "1", "key": "1", "matches": [Match(wm_class="firefox")]},
     {"name": "1", "key": "1", "matches": [Match(wm_class="firefoxdeveloperedition")]},
     {"name": "2", "key": "2", "matches": [Match(wm_class="code")]},
-    {"name": "3", "key": "3", "matches": []},
-    {"name": "4", "key": "4", "matches": []},
+    {"name": "3", "key": "3", "matches": [Match(wm_class="thunderbird")]},
+    {"name": "4", "key": "4", "matches": [Match(wm_class="emacs")]},
     {"name": "5", "key": "5", "matches": []},
     {"name": "6", "key": "6", "matches": []},
     {"name": "7", "key": "7", "matches": []},
@@ -422,7 +419,7 @@ screens = [
             [
                 widget.Spacer(length=5),
                 widget.CurrentScreen(
-                    fontsize=30,
+                    fontsize=55,
                     active_text="",
                     inactive_text="",
                     active_color=colors["active"],
@@ -443,11 +440,12 @@ screens = [
                     highlight_method="line",
                     rounded=False,
                     use_mouse_wheel=False,
-                    fontsize=20,
-                    borderwidth=4,
+                    fontsize=21,
+                    borderwidth=5,
                     disable_drag=True,
                 ),
-                CurrentLayoutIcon(scale=0.6),
+                CurrentLayout(scale=0.7, mode="icon"),
+                widget.Spacer(length=10),
                 widget.WindowName(),
                 # instead of title for a focused window, you can opt in for a
                 # list of windows and their icons
@@ -464,7 +462,7 @@ screens = [
                         # note that when adding widgets emojis push the text more to
                         # the center so clock appears to be a bit lower than widgets.
                         widget.Wttr(
-                            location={"Droylsden": "Droylsden"},
+                            location={"WAW": "WAW"},
                             # json=False,
                             # if format removed it will include default
                             # format="MAN: %t",
@@ -509,7 +507,7 @@ screens = [
                         "Button1": lambda: qtile.cmd_spawn(
                             "alacritty -e emacs -nw --eval '(progn (calendar))'"
                         )
-                    }
+                    },
                     # mouse_callbacks={
                     # "Button1": lambda: qtile.cmd_spawn("alacritty --hold -e cal -3")
                     # },
