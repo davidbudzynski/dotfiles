@@ -4,8 +4,9 @@ feh --bg-scale --randomize ~/Pictures/wallpapers/*
 # network applet
 nm-applet &
 disown
-blueman-applet &
-disown
+# bluetooth
+# blueman-applet &
+# disown
 # clipboard manager
 # QT_SCALE_FACTOR=0.75
 copyq &
@@ -36,7 +37,7 @@ disown
 dunst &
 disown
 # blue screen reduction, automatically get location
-redshift-gtk -l $(curl -s "https://location.services.mozilla.com/v1/geolocate?key=geoclue" | awk 'OFS=":" {print $3,$5}' | tr -d ',}') &
+# redshift-gtk -l $(curl -s "https://location.services.mozilla.com/v1/geolocate?key=geoclue" | awk 'OFS=":" {print $3,$5}' | tr -d ',}') &
 disown
 # power manager
 xfce4-power-manager &
@@ -50,6 +51,9 @@ signal-desktop &
 disown
 code &
 disown
-
+thunderbird &
+disown
+emacsclient -n -c -a emacs &
+disown
 # fix keyboard settings (decrease delay and increase repeat)
 #xset r rate 200 30
