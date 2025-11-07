@@ -3,7 +3,7 @@ export fpath=($ZSH/custom/plugins/zsh-completions/src $fpath)
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 # export PATH="$HOME/.local/bin"
 # add doom emacs path to invoke doom comand from anywhere
-export PATH="$HOME/.emacs.d/bin:$PATH"
+export PATH="$HOME/.config/emacs/bin:$PATH"
 # add pip to PATH
 export PATH="$HOME/.local/bin:$PATH"
 EDITOR=nvim
@@ -18,7 +18,6 @@ export ZSH="$HOME/.oh-my-zsh"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="bira"
-
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -91,6 +90,7 @@ plugins=(
     fzf-tab
     # emacs
     # tmux # aliases for tmux
+    direnv
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -128,7 +128,7 @@ alias ranger="/home/david/.config/qtile/ranger-startup-fix.sh"
 # requires bat installed on your system
 alias cat=bat
 # exa is deprecated and no longer maintained, use eza instead or go back to the
-# good old ls  
+# good old ls
 alias ls=eza
 # open magit to deal with git in the terminal
 # taken from here: https://trycatchchris.co.uk/post/view/Open-Emacs-magit-from-command-line
@@ -149,3 +149,5 @@ alias chmod='chmod --preserve-root'
 alias chgrp='chgrp --preserve-root'
 alias R='R --quiet --no-save --no-restore'
 alias rubyserver='ruby -run -e httpd . -p 8000'
+eval "$(zoxide init zsh)"
+setopt CORRECT
