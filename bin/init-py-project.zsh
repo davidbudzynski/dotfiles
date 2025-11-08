@@ -47,6 +47,7 @@ LSP_PACKAGES_FULL=(
     pytest
     pytest-cov
     sphinx
+    ipython
 )
 
 # Minimal environment
