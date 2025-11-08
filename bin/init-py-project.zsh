@@ -4,6 +4,7 @@ set -euo pipefail
 # ==========================================================
 # setup-python-env.zsh
 # ----------------------------------------------------------
+#
 # Create a Python development environment using:
 #   - uv (fast Python package/project manager)
 #   - direnv (.envrc auto-activation)
@@ -29,6 +30,7 @@ set -euo pipefail
 #   - zsh
 #   - uv
 #   - direnv
+#
 # ==========================================================
 
 PYTHON_VERSION=""
@@ -54,7 +56,7 @@ LSP_PACKAGES_MINIMAL=(
 )
 
 show_help() {
-    sed -n '3,38p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '7,33p' "$0" | sed 's/^# \{0,1\}//'
     exit 0
 }
 
