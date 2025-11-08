@@ -130,34 +130,28 @@ cat >.editorconfig <<'EOF'
 root = true
 
 [*]
-end_of_line = lf
 charset = utf-8
-trim_trailing_whitespace = true
+end_of_line = lf
 insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
 
 [*.py]
-indent_style = space
 indent_size = 4
 max_line_length = 79
 
-[*.toml]
-indent_style = space
-indent_size = 2
-
-[*.yaml]
-indent_style = space
-indent_size = 2
-
-[*.yml]
-indent_style = space
-indent_size = 2
-
-[*.json]
-indent_style = space
+[*.{yml,yaml,json,toml,sh}]
 indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
+
+[Makefile]
+indent_style = tab
+
+[*.rst]
+max_line_length = off
+
 EOF
 
 echo "Setup complete."
