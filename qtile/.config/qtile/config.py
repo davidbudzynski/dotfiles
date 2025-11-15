@@ -42,6 +42,7 @@ from libqtile.lazy import lazy
 from libqtile.widget import CurrentLayout
 import os
 import subprocess
+import re
 
 
 # startup apps
@@ -106,8 +107,18 @@ keys = [
     # this toggles the floating / tiling window mode
     Key([mod], "t", lazy.window.toggle_floating()),
     # Switch between windows in current stack pane
-    Key([mod], "h", lazy.layout.left(), desc="move focus in stack pane to the left"),
-    Key([mod], "l", lazy.layout.right(), desc="move focus in stack pane to the right"),
+    Key(
+        [mod],
+        "h",
+        lazy.layout.left(),
+        desc="move focus in stack pane to the left",
+    ),
+    Key(
+        [mod],
+        "l",
+        lazy.layout.right(),
+        desc="move focus in stack pane to the right",
+    ),
     Key([mod], "j", lazy.layout.down(), desc="move focus down in stack pane"),
     Key([mod], "k", lazy.layout.up(), desc="move focus up in the stack pane"),
     Key([mod], "c", lazy.window.center(), desc="center floating window"),
@@ -143,9 +154,24 @@ keys = [
     # Key([mod, "control"], "m", lazy.layout.grow_right()),
     # column stack layout end
     # customize window sizes
-    Key([mod], "equal", lazy.layout.grow(), desc="increase size of window in focus"),
-    Key([mod], "minus", lazy.layout.shrink(), desc="decrease size of window in focus"),
-    Key([mod], "n", lazy.layout.reset(), desc="reset window sized back to default"),
+    Key(
+        [mod],
+        "equal",
+        lazy.layout.grow(),
+        desc="increase size of window in focus",
+    ),
+    Key(
+        [mod],
+        "minus",
+        lazy.layout.shrink(),
+        desc="decrease size of window in focus",
+    ),
+    Key(
+        [mod],
+        "n",
+        lazy.layout.reset(),
+        desc="reset window sized back to default",
+    ),
     Key(
         [mod],
         "o",
@@ -153,7 +179,10 @@ keys = [
         desc="maximize the size of the focused window",
     ),
     Key(
-        [mod, "shift"], "space", lazy.layout.flip(), desc="flip master/stack positions"
+        [mod, "shift"],
+        "space",
+        lazy.layout.flip(),
+        desc="flip master/stack positions",
     ),
     # Switch window focus to other pane(s) of stack
     Key(
@@ -184,7 +213,12 @@ keys = [
         ),
         desc="Launch rofi",
     ),
-    Key([mod], "period", lazy.spawn("rofi -show emoji"), desc="launch emoji selector"),
+    Key(
+        [mod],
+        "period",
+        lazy.spawn("rofi -show emoji"),
+        desc="launch emoji selector",
+    ),
     Key([mod], "e", lazy.spawn(editor), desc="Launch code editor"),
     Key([mod], "w", lazy.spawn(browser), desc="Launch Firefox"),
     # Key([mod], "f", lazy.spawn("alacritty -e ranger"), desc="Launch Ranger"),
@@ -205,8 +239,8 @@ keys = [
     Key(
         [mod],
         "f",
-        lazy.spawn("wezterm -e yazi"),
-        desc="Launch yazi (better ranger alternative) in wezterm (perhaps better default terminal alternative)",
+        lazy.spawn("ghostty -e yazi"),
+        desc="Launch yazi (better ranger alternative) in ghostty",
     ),
     Key(
         [mod, "control"],
@@ -276,7 +310,12 @@ keys = [
         desc="Audio play-pause toggle",
     ),
     Key([], "XF86AudioNext", lazy.spawn("playerctl next"), desc="Audio next"),
-    Key([], "XF86AudioPrev", lazy.spawn("playerctl next"), desc="Audio previous"),
+    Key(
+        [],
+        "XF86AudioPrev",
+        lazy.spawn("playerctl next"),
+        desc="Audio previous",
+    ),
 ]
 
 groups = [
@@ -309,10 +348,18 @@ groups = [
 workspaces = [
     # exmaple of matching workspace with an app
     # {"name": "1", "key": "1", "matches": [Match(wm_class="firefox")]},
-    {"name": "1", "key": "1", "matches": [Match(wm_class="firefoxdeveloperedition")]},
-    {"name": "2", "key": "2", "matches": [Match(wm_class="code")]},
-    {"name": "3", "key": "3", "matches": [Match(wm_class="thunderbird")]},
-    {"name": "4", "key": "4", "matches": [Match(wm_class="emacs")]},
+    {
+        "name": "1",
+        "key": "1",
+        "matches": [Match(wm_class="firefoxdeveloperedition")],
+    },
+    {"name": "2", "key": "2", "matches": [Match(wm_class="emacs")]},
+    {
+        "name": "3",
+        "key": "3",
+        "matches": [Match(wm_class=re.compile(r"thunderbird"))],
+    },
+    {"name": "4", "key": "4", "matches": [Match(wm_class="code")]},
     {"name": "5", "key": "5", "matches": []},
     {"name": "6", "key": "6", "matches": []},
     {"name": "7", "key": "7", "matches": []},
@@ -323,8 +370,12 @@ workspaces = [
 
 for workspace in workspaces:
     matches = workspace["matches"] if "matches" in workspace else None
-    groups.append(Group(workspace["name"], matches=matches, layout="monadtall"))
-    keys.append(Key([mod], workspace["key"], lazy.group[workspace["name"]].toscreen()))
+    groups.append(
+        Group(workspace["name"], matches=matches, layout="monadtall")
+    )
+    keys.append(
+        Key([mod], workspace["key"], lazy.group[workspace["name"]].toscreen())
+    )
     keys.append(
         Key(
             [mod, "shift"],
@@ -497,7 +548,9 @@ screens = [
                     display_map={"us": "🇺🇸", "us intl": "🇪🇺", "pl": "🇵🇱"},
                     fontsize=30,
                     mouse_callbacks={
-                        "Button1": lazy.widget["keyboardlayout"].next_keyboard()
+                        "Button1": lazy.widget[
+                            "keyboardlayout"
+                        ].next_keyboard()
                     },
                 ),
                 widget.Spacer(length=10),
@@ -529,7 +582,10 @@ mouse = [
         start=lazy.window.get_position(),
     ),
     Drag(
-        [mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()
+        [mod],
+        "Button3",
+        lazy.window.set_size_floating(),
+        start=lazy.window.get_size(),
     ),
     Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
