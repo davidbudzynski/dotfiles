@@ -1,209 +1,281 @@
-# Config by David Budzynski
+# ==============================================================================
+# Qtile configuration by David Budzynski
+# ==============================================================================
+#
+# A minimal, terminal-centric Qtile setup built around:
+#   - MonadTall tiling (default) with Columns / TreeTab alternates
+#   - Ghostty terminal, firefox-developer-edition, VS Code
+#   - A caffeine toggle (systemd-inhibit) that prevents sleep/idle while
+#     active - like Amphetamine on macOS - shown as a "☕ ON / ☕ OFF" pill
+#     in the bar (left-click to toggle)
+#
+# Keybinding cheat-sheet (mod = Super/Win):
+#   mod+x l/s/r/q/p/b     lock / suspend / reload / quit / poweroff / reboot
+#   mod+Return             terminal            mod+w          browser
+#   mod+e                  editor              mod+f          yazi file manager
+#   mod+t                  toggle floating     mod+g          float window to front
+#   mod+Space              next layout         mod+b          toggle bar
+#   mod+h/l/j/k            move focus          mod+Shift+h/l/j/k  move window
+#   mod+1..0               switch workspace    mod+Shift+1..0 move window to it
+#   mod+q                  kill window         mod+Shift+f    fullscreen
+#   alt+space              rofi launcher       mod+period     emoji picker
+#   mod+d t/m              scratchpad: terminal / mixer
+#   Print                  flameshot GUI       XF86* keys     volume & media
+# ==============================================================================
 
-# Copyright (c) 2010 Aldo Cortesi
-# Copyright (c) 2010, 2014 dequis
-# Copyright (c) 2012 Randall Ma
-# Copyright (c) 2012-2014 Tycho Andersen
-# Copyright (c) 2012 Craig Barnes
-# Copyright (c) 2013 horsik
-# Copyright (c) 2013 Tao Sauvage
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
 
-from libqtile import bar, layout, widget, hook, qtile
+# ==============================================================================
+# IMPORTS
+# ==============================================================================
+import os
+import re
+import signal
+import subprocess
+from typing import Any
+
+from libqtile import bar, layout, widget, hook
 from libqtile.config import (
     Click,
     Drag,
+    DropDown,
     Group,
     Key,
     KeyChord,
+    Match,
     Screen,
     ScratchPad,
-    DropDown,
-    Match,
 )
 from libqtile.lazy import lazy
-from libqtile.widget import CurrentLayout
-import os
-import subprocess
-import re
+from libqtile.widget import CurrentLayout, base
 
 
-# startup apps
-@hook.subscribe.startup_once
-def autostart():
-    autostart_path = os.path.expanduser("~/.config/qtile/autostart.sh")
-    subprocess.call([autostart_path])
-
-
-# swallow windows
-# taken from https://github.com/qtile/qtile/issues/1771
-# @hook.subscribe.client_new
-# def _swallow(window):
-#     pid = window.window.get_net_wm_pid()
-#     ppid = psutil.Process(pid).ppid()
-#     cpids = {
-#         c.window.get_net_wm_pid(): wid for wid, c in window.qtile.windows_map.items()
-#     }
-#     for i in range(5):
-#         if not ppid:
-#             return
-#         if ppid in cpids:
-#             parent = window.qtile.windows_map.get(cpids[ppid])
-#             parent.minimized = True
-#             window.parent = parent
-#             return
-#         ppid = psutil.Process(ppid).ppid()
-
-
-# @hook.subscribe.client_killed
-# def _unswallow(window):
-#     if hasattr(window, "parent"):
-#         window.parent.minimized = False
-# window swallow ends here
-
-
-mod = "mod4"
+# ==============================================================================
+# DEFAULT APPLICATIONS & KEY MOD
+# ==============================================================================
+mod = "mod4"  # Super/Win key - main modifier for all keybindings
 terminal = "ghostty"
 browser = "firefox-developer-edition"
-# editor = "emacsclient -n -c -a emacs"
 editor = "code"
 home = os.path.expanduser("~")
 
 
+# ==============================================================================
+# THEME - colors, layout and widget styling
+# ==============================================================================
+colors = {
+    "background": "#1d1f21",
+    "foreground": "#c4c8c5",
+    "highlight": "#313335",
+    "inactive": "#545B68",
+    "active": "#ecf0ed",
+    "red": "#cc6666",
+    "blue": "#80a1bd",
+    "green": "#b5bd68",
+}
+
+layout_theme = {
+    "margin": 20,
+    "border_width": 5,
+    "border_focus": "#cc241d",
+    "border_normal": "#282828",
+}
+
+widget_defaults = dict(
+    font="Cascadia Code",
+    fontsize=21,
+    padding=3,
+    background=colors["background"],
+    foreground=colors["foreground"],
+)
+extension_defaults = widget_defaults.copy()
+
+
+# ==============================================================================
+# HELPER FUNCTIONS & CUSTOM WIDGETS
+# ==============================================================================
 @lazy.function
 def float_to_front(qtile) -> None:
-    """Bring all floating windows of the group to front"""
+    """Bring all floating windows of the group to the front."""
     for window in qtile.current_group.windows:
         if window.floating:
             window.cmd_bring_to_front()
 
 
-# key names for keys other than letters are weird they are all described here:
-# https://github.com/qtile/qtile/blob/master/libqtile/xkeysyms.py
+# --- Caffeine: prevent sleep/idle while active (like Amphetamine on macOS) ---
+# A `systemd-inhibit` process holds the lock; the widget polls for its state.
+CAFFEINE_PIDFILE = "/tmp/qtile-caffeine.pid"
+CAFFEINE_MARKER = "qtile-caffeine"
+
+
+def caffeine_running() -> bool:
+    """True if a systemd-inhibit caffeine process is alive."""
+    return (
+        subprocess.run(
+            ["pgrep", "-f", f"systemd-inhibit.*{CAFFEINE_MARKER}"],
+            capture_output=True,
+        ).returncode
+        == 0
+    )
+
+
+def start_caffeine() -> None:
+    """Spawn systemd-inhibit holding a lock on idle and sleep."""
+    stop_caffeine()
+    proc = subprocess.Popen(
+        [
+            "systemd-inhibit",
+            f"--who={CAFFEINE_MARKER}",
+            "--what=idle:sleep",
+            "--why=Caffeine toggle",
+            "sleep",
+            "infinity",
+        ],
+        start_new_session=True,
+    )
+    with open(CAFFEINE_PIDFILE, "w") as f:
+        f.write(str(proc.pid))
+
+
+def stop_caffeine() -> None:
+    """Kill the caffeine process group and release the lock."""
+    try:
+        with open(CAFFEINE_PIDFILE) as f:
+            pid = int(f.read().strip())
+        os.killpg(pid, signal.SIGTERM)
+    except (FileNotFoundError, ValueError, ProcessLookupError, PermissionError):
+        pass
+    finally:
+        try:
+            os.unlink(CAFFEINE_PIDFILE)
+        except FileNotFoundError:
+            pass
+
+
+@lazy.function
+def toggle_caffeine(qtile) -> None:
+    if caffeine_running():
+        stop_caffeine()
+    else:
+        start_caffeine()
+
+
+class CaffeineToggle(base.InLoopPollText):
+    """Pill-style bar widget; left-click to toggle caffeine on/off."""
+
+    defaults = [
+        ("update_interval", 2, "Poll interval in seconds"),
+        ("on_text", "☕ ON", "Text when caffeine is active"),
+        ("off_text", "☕ OFF", "Text when caffeine is inactive"),
+        ("on_color", colors["green"], "Foreground color when active"),
+        ("off_color", colors["inactive"], "Foreground color when inactive"),
+    ]
+
+    def __init__(self, **config):
+        base.InLoopPollText.__init__(self, **config)
+        self.add_defaults(CaffeineToggle.defaults)
+        self.add_callbacks({"Button1": toggle_caffeine})
+
+    def poll(self):
+        if caffeine_running():
+            self.foreground = self.on_color
+            return self.on_text
+        self.foreground = self.off_color
+        return self.off_text
+
+
+# ==============================================================================
+# KEYBINDINGS
+# ==============================================================================
 keys = [
+    # --- System & power (mod+x, then one of these) ---
+    KeyChord(
+        [mod],
+        "x",
+        [
+            Key([], "l", lazy.spawn("betterlockscreen -s blur"), desc="Lock screen"),
+            Key([], "s", lazy.spawn("systemctl suspend"), desc="Suspend system"),
+            Key([], "r", lazy.reload_config(), desc="Reload Qtile config"),
+            Key([], "q", lazy.shutdown(), desc="Shutdown/logout Qtile"),
+            Key([], "p", lazy.spawn("poweroff"), desc="Power off machine"),
+            Key([], "b", lazy.spawn("reboot"), desc="Reboot machine"),
+        ],
+    ),
+    # --- Workspace switching ---
+    # Quick back-and-forth between current and previous workspace
+    Key(
+        [mod],
+        "BackSpace",
+        lazy.screen.toggle_group(),
+        desc="Switch to last visited workspace",
+    ),
+    # Cycle to next/previous workspace
+    Key(
+        [mod, "control"],
+        "h",
+        lazy.screen.prev_group(),
+        desc="Move to workspace on left",
+    ),
+    Key(
+        [mod, "control"],
+        "l",
+        lazy.screen.next_group(),
+        desc="Move to workspace on right",
+    ),
+    # Shift focused window to next/previous workspace
+    Key(
+        [mod, "control", "shift"],
+        "h",
+        lazy.window.togroup_prev(),
+        desc="Move window to workspace on left",
+    ),
+    Key(
+        [mod, "control", "shift"],
+        "l",
+        lazy.window.togroup_next(),
+        desc="Move window to workspace on right",
+    ),
+    # --- Window focus & floating ---
     Key(
         [mod],
         "g",
-        float_to_front(),
-        desc="if a floating window becomes buried under tiled windows, bring it to the front",
+        float_to_front,
+        desc="Bring buried floating window to the front",
     ),
-    # this toggles the floating / tiling window mode
-    Key([mod], "t", lazy.window.toggle_floating()),
-    # Switch between windows in current stack pane
-    Key(
-        [mod],
-        "h",
-        lazy.layout.left(),
-        desc="move focus in stack pane to the left",
-    ),
-    Key(
-        [mod],
-        "l",
-        lazy.layout.right(),
-        desc="move focus in stack pane to the right",
-    ),
-    Key([mod], "j", lazy.layout.down(), desc="move focus down in stack pane"),
-    Key([mod], "k", lazy.layout.up(), desc="move focus up in the stack pane"),
-    Key([mod], "c", lazy.window.center(), desc="center floating window"),
-    #  Move windows in current stack
-    Key(
-        [mod, "shift"],
-        "h",
-        lazy.layout.swap_left(),
-        desc="move window left in current stack",
-    ),
-    Key(
-        [mod, "shift"],
-        "l",
-        lazy.layout.swap_right(),
-        desc="move window right in current stack",
-    ),
-    Key(
-        [mod, "shift"],
-        "j",
-        lazy.layout.shuffle_down(),
-        desc="move window down in current stack",
-    ),
-    Key(
-        [mod, "shift"],
-        "k",
-        lazy.layout.shuffle_up(),
-        desc="move window up in current stack",
-    ),
-    # for column stack layout
-    # TODO maybe figure out a different keybinding becasue it clashes with
-    # monad tall shink/grow
-    # Key([mod, "control"], "n", lazy.layout.grow_left()),
-    # Key([mod, "control"], "m", lazy.layout.grow_right()),
-    # column stack layout end
-    # customize window sizes
-    Key(
-        [mod],
-        "equal",
-        lazy.layout.grow(),
-        desc="increase size of window in focus",
-    ),
-    Key(
-        [mod],
-        "minus",
-        lazy.layout.shrink(),
-        desc="decrease size of window in focus",
-    ),
-    Key(
-        [mod],
-        "n",
-        lazy.layout.reset(),
-        desc="reset window sized back to default",
-    ),
-    Key(
-        [mod],
-        "o",
-        lazy.layout.maximize(),
-        desc="maximize the size of the focused window",
-    ),
-    Key(
-        [mod, "shift"],
-        "space",
-        lazy.layout.flip(),
-        desc="flip master/stack positions",
-    ),
-    # Switch window focus to other pane(s) of stack
-    Key(
-        [mod],
-        "Tab",
-        lazy.layout.next(),
-        desc="Switch window focus to other pane(s) of stack",
-    ),
-    # Swap panes of split stack
-    # Key([mod, "shift"], "space", lazy.layout.rotate(),
-    #    desc="Swap panes of split stack"),
-    # Toggle between split and unsplit sides of stack.
-    # Split = all windows displayed
-    # Unsplit = 1 window displayed, like Max layout, but still with
-    # multiple stack panes
+    Key([mod], "t", lazy.window.toggle_floating(), desc="Toggle floating mode"),
+    # Switch focus in current stack
+    Key([mod], "h", lazy.layout.left(), desc="Move focus left"),
+    Key([mod], "l", lazy.layout.right(), desc="Move focus right"),
+    Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
+    Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
+    Key([mod], "c", lazy.window.center(), desc="Center floating window"),
+    # Move windows in current stack
+    Key([mod, "shift"], "h", lazy.layout.swap_left(), desc="Move window left"),
+    Key([mod, "shift"], "l", lazy.layout.swap_right(), desc="Move window right"),
+    Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
+    Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
+    # --- Window sizing & layout management ---
+    Key([mod], "equal", lazy.layout.grow(), desc="Increase window size"),
+    Key([mod], "minus", lazy.layout.shrink(), desc="Decrease window size"),
+    Key([mod], "n", lazy.layout.reset(), desc="Reset window size"),
+    Key([mod], "o", lazy.layout.maximize(), desc="Maximize window size"),
+    Key([mod, "shift"], "space", lazy.layout.flip(), desc="Flip master/stack"),
+    Key([mod], "Tab", lazy.layout.next(), desc="Switch window focus"),
     Key(
         [mod, "shift"],
         "Return",
         lazy.layout.toggle_split(),
-        desc="Toggle between split and unsplit sides of stack",
+        desc="Toggle split/unsplit stack",
     ),
+    Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod], "b", lazy.hide_show_bar(), desc="Toggle the status bar"),
+    Key(
+        [mod, "shift"],
+        "f",
+        lazy.window.toggle_fullscreen(),
+        desc="Toggle fullscreen mode",
+    ),
+    # --- Spawning applications ---
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
     Key(
         ["mod1"],
@@ -213,56 +285,12 @@ keys = [
         ),
         desc="Launch rofi",
     ),
-    Key(
-        [mod],
-        "period",
-        lazy.spawn("rofi -show emoji"),
-        desc="launch emoji selector",
-    ),
+    Key([mod], "period", lazy.spawn("rofi -show emoji"), desc="Launch emoji selector"),
     Key([mod], "e", lazy.spawn(editor), desc="Launch code editor"),
-    Key([mod], "w", lazy.spawn(browser), desc="Launch Firefox"),
-    # Key([mod], "f", lazy.spawn("alacritty -e ranger"), desc="Launch Ranger"),
-    # fix for issues with ranger opening and resizing
-    # described here: https://groups.google.com/g/qtile-dev/c/mjMKB533GNA/m/f0UGhBxpDgAJ
-    # Key(
-    #     [mod],
-    #     "f",
-    #     # lazy.spawn("alacritty -e /home/david/.config/qtile/ranger-startup-fix.sh"),
-    #     # finally relative paths are working!
-    #     # for spawning an app with its own window  in a script or a script that
-    #     #  won't need to run in a window, simply use home + "whatever path to script"
-    #     lazy.spawn(
-    #         "" + terminal + " -e " + home + "/.config/qtile/ranger-startup-fix.sh"
-    #     ),
-    #     desc="Launch Ranger",
-    # )
-    Key(
-        [mod],
-        "f",
-        lazy.spawn("ghostty -e yazi"),
-        desc="Launch yazi (better ranger alternative) in ghostty",
-    ),
-    Key(
-        [mod, "control"],
-        "l",
-        lazy.spawn("betterlockscreen -s blur"),
-        desc="lock using betterclockscreen with blur effect and suspend",
-    ),
-    Key([], "Print", lazy.spawn("flameshot gui"), desc="take a screenshot"),
-    # Toggle between different layouts as defined below
-    Key([mod], "space", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
-    Key([mod, "control"], "r", lazy.restart(), desc="Restart qtile"),
-    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown qtile"),
-    # toggle the status bar
-    Key([mod], "b", lazy.hide_show_bar(), desc="toggle the status bar"),
-    Key(
-        [mod, "shift"],
-        "f",
-        lazy.window.toggle_fullscreen(),
-        desc="turn off the bar and go full screen mode",
-    ),
-    # dropdown apps
+    Key([mod], "w", lazy.spawn(browser), desc="Launch browser"),
+    Key([mod], "f", lazy.spawn(f"{terminal} -e yazi"), desc="Launch yazi file manager"),
+    Key([], "Print", lazy.spawn("flameshot gui"), desc="Take a screenshot"),
+    # --- Scratchpad dropdowns (mod+d, then one of these) ---
     KeyChord(
         [mod],
         "d",
@@ -271,60 +299,45 @@ keys = [
             Key([], "t", lazy.group["scratchpad"].dropdown_toggle("term")),
         ],
     ),
-    # volume and media keys
+    # --- Volume (PipeWire / PulseAudio) ---
     Key(
         [],
         "XF86AudioMute",
-        lazy.spawn(home + "/.config/qtile/volume-control.sh toggle"),
-        # lazy.spawn("amixer -D pulse sset Master toggle"),
+        lazy.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle"),
         desc="Mute audio",
     ),
     Key(
         [],
         "XF86AudioLowerVolume",
-        lazy.spawn(home + "/.config/qtile/volume-control.sh down"),
-        # lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ -2%"),
+        lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ -2%"),
         desc="Volume down",
     ),
     Key(
         [],
         "XF86AudioRaiseVolume",
-        lazy.spawn(home + "/.config/qtile/volume-control.sh up"),
-        # lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ +2%"),
+        lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ +2%"),
         desc="Volume up",
     ),
-    # Brightness - not working yet
-    # Key([], "XF86MonBrightnessDown",
-    #     lazy.spawn(home + "/.local/bin/statusbar/brightnesscontrol down"),
-    #     desc='Brightness down'
-    #     ),
-    # Key([], "XF86MonBrightnessUp",
-    #     lazy.spawn(home + "/.local/bin/statusbar/brightnesscontrol up"),
-    #     desc='Brightness up'
-    #     ),
-    # Media keys - not wokring yet (need to get them to work on bare metal)
+    # --- Media keys ---
     Key(
-        [],
-        "XF86AudioPlay",
-        lazy.spawn("playerctl play-pause"),
-        desc="Audio play-pause toggle",
+        [], "XF86AudioPlay", lazy.spawn("playerctl play-pause"), desc="Audio play-pause"
     ),
     Key([], "XF86AudioNext", lazy.spawn("playerctl next"), desc="Audio next"),
-    Key(
-        [],
-        "XF86AudioPrev",
-        lazy.spawn("playerctl next"),
-        desc="Audio previous",
-    ),
+    Key([], "XF86AudioPrev", lazy.spawn("playerctl previous"), desc="Audio previous"),
 ]
 
-groups = [
+
+# ==============================================================================
+# GROUPS & WORKSPACES
+# ==============================================================================
+# Scratchpads are togglable dropdown windows, available from any workspace
+groups: list[Group] = [
     ScratchPad(
         "scratchpad",
         [
             DropDown(
                 "term",
-                "alacritty",
+                terminal,
                 on_focus_lost_hide=True,
                 height=0.65,
                 opacity=0.95,
@@ -345,19 +358,18 @@ groups = [
     ),
 ]
 
-workspaces = [
-    # exmaple of matching workspace with an app
-    # {"name": "1", "key": "1", "matches": [Match(wm_class="firefox")]},
-    {
-        "name": "1",
-        "key": "1",
-        "matches": [Match(wm_class="firefoxdeveloperedition")],
-    },
+# Workspace definitions: name, group-switch key and windows that auto-match
+workspaces: list[dict[str, Any]] = [
+    {"name": "1", "key": "1", "matches": [Match(wm_class="firefoxdeveloperedition")]},
     {"name": "2", "key": "2", "matches": [Match(wm_class="emacs")]},
     {
         "name": "3",
         "key": "3",
-        "matches": [Match(wm_class=re.compile(r"thunderbird"))],
+        "matches": [
+            Match(wm_class=re.compile(r"thunderbird", re.IGNORECASE)),
+            Match(wm_class=re.compile(r"Mail", re.IGNORECASE)),
+            Match(wm_class=re.compile(r"org.mozilla.Thunderbird", re.IGNORECASE)),
+        ],
     },
     {"name": "4", "key": "4", "matches": [Match(wm_class="code")]},
     {"name": "5", "key": "5", "matches": []},
@@ -365,44 +377,48 @@ workspaces = [
     {"name": "7", "key": "7", "matches": []},
     {"name": "8", "key": "8", "matches": []},
     {"name": "9", "key": "9", "matches": []},
-    {"name": "10", "key": "0", "matches": [Match(wm_class="Signal")]},
+    {"name": "10", "key": "0", "matches": [Match(wm_class="signal")]},
 ]
 
+# Build one Group per workspace plus its mod+key / mod+shift+key bindings
 for workspace in workspaces:
-    matches = workspace["matches"] if "matches" in workspace else None
-    groups.append(
-        Group(workspace["name"], matches=matches, layout="monadtall")
-    )
-    keys.append(
-        Key([mod], workspace["key"], lazy.group[workspace["name"]].toscreen())
-    )
-    keys.append(
-        Key(
-            [mod, "shift"],
-            workspace["key"],
-            lazy.window.togroup(workspace["name"], switch_group=True),
-        )
+    matches = workspace.get("matches", None)
+    groups.append(Group(workspace["name"], matches=matches, layout="monadtall"))
+    keys.extend(
+        [
+            Key([mod], workspace["key"], lazy.group[workspace["name"]].toscreen()),
+            Key(
+                [mod, "shift"],
+                workspace["key"],
+                lazy.window.togroup(workspace["name"], switch_group=True),
+            ),
+        ]
     )
 
 
-layout_theme = {
-    "margin": 20,
-    "border_width": 5,
-    "border_focus": "#cc241d",
-    "border_normal": "#282828",
-}
+# ==============================================================================
+# MOUSE BINDINGS - drag and resize floating windows
+# ==============================================================================
+mouse = [
+    Drag(
+        [mod],
+        "Button1",
+        lazy.window.set_position_floating(),
+        start=lazy.window.get_position(),
+    ),
+    Drag(
+        [mod],
+        "Button3",
+        lazy.window.set_size_floating(),
+        start=lazy.window.get_size(),
+    ),
+    Click([mod], "Button2", lazy.window.bring_to_front()),
+]
 
-colors = {
-    "background": ["#1d1f21"],
-    "foreground": ["#c4c8c5"],
-    "highlight": ["#313335"],
-    "inactive": ["#545B68"],
-    "active": ["#ecf0ed"],
-    "red": ["#cc6666"],
-    "blue": ["#80a1bd"],
-    "green": ["#b5bd68"],
-}
 
+# ==============================================================================
+# LAYOUTS - the first layout (monadtall) is the default
+# ==============================================================================
 layouts = [
     layout.MonadTall(
         **layout_theme,
@@ -411,24 +427,14 @@ layouts = [
         single_margin=0,
     ),
     layout.Max(),
-    # layout.Stack(
-    # **layout_theme,
-    # num_stacks=2
-    # ),
-    # Try more layouts by unleashing below layouts.
-    # layout.Bsp(),
     layout.Columns(
-        # **layout_theme,
         border_width=5,
         num_columns=3,
         border_on_single=True,
         insert_position=1,
     ),
-    # layout.Matrix(),
     layout.MonadWide(**layout_theme),
     layout.MonadThreeCol(**layout_theme),
-    # layout.RatioTile(),
-    # layout.Tile(),
     layout.TreeTab(
         fontsize=21,
         sections=[""],
@@ -448,31 +454,25 @@ layouts = [
         vspace=3,
         panel_width=400,
     ),
-    # layout.VerticalTile(),
-    # layout.Zoomy(),
-    # layout.Slice(),
     layout.Floating(),
 ]
 
-widget_defaults = dict(
-    # font="Source Code Pro Bold",
-    font="Cascadia Code",
-    fontsize=21,
-    padding=3,
-    background=colors["background"],
-    foreground=colors["foreground"],
-)
-extension_defaults = widget_defaults.copy()
 
+# ==============================================================================
+# SCREENS & STATUS BAR
+# ==============================================================================
+# Bar layout: [left: screen/workspaces] [center: window name]
+#             [right: tray, volume, caffeine, keyboard, clock]
 screens = [
     Screen(
         top=bar.Bar(
             [
+                # --- Left: screen indicator, workspaces, layout icon ---
                 widget.Spacer(length=5),
                 widget.CurrentScreen(
                     fontsize=55,
-                    active_text="",
-                    inactive_text="",
+                    active_text="",
+                    inactive_text="",
                     active_color=colors["active"],
                     inactive_color=colors["foreground"],
                     padding=10,
@@ -497,11 +497,10 @@ screens = [
                 ),
                 CurrentLayout(scale=0.7, mode="icon"),
                 widget.Spacer(length=10),
+                # --- Center: focused window name ---
                 widget.WindowName(),
-                # instead of title for a focused window, you can opt in for a
-                # list of windows and their icons
-                # widget.TaskList(title_width_method="uniform"),
                 widget.Spacer(length=10),
+                # --- Right: tray, volume/disk, caffeine, keyboard, clock ---
                 widget.Systray(icon_size=28),
                 widget.Spacer(length=10),
                 widget.WidgetBox(
@@ -510,21 +509,8 @@ screens = [
                     text_open="...",
                     widgets=[
                         widget.Spacer(length=10),
-                        # note that when adding widgets emojis push the text more to
-                        # the center so clock appears to be a bit lower than widgets.
-                        widget.Wttr(
-                            location={"WAW": "WAW"},
-                            # json=False,
-                            # if format removed it will include default
-                            # format="MAN: %t",
-                            #
-                            # see this link for details:
-                            # https://github.com/chubin/wttr.in#one-line-output
-                            format="2",
-                        ),
-                        widget.Spacer(length=10),
+                        # Native PipeWire / PulseAudio widget
                         widget.Volume(
-                            # fmt="\U0001f50a {}",  # speaker emoji and percentage
                             fmt="🔊 {}",
                             mute_command="amixer -D pulse sset Master toggle",
                             volume_app="pavucontrol",
@@ -536,34 +522,31 @@ screens = [
                         widget.Spacer(length=10),
                         widget.DF(
                             visible_on_warn=False,
-                            format="💾 {uf}{m}",
+                            format="💾 {uf:.2f}{m}",
                         ),
                         widget.Spacer(length=10),
                     ],
                 ),
-                # widget.Sep(linewidth=3, padding=20, size_percent=40),
+                widget.Spacer(length=10),
+                # Caffeine: click to keep the PC awake while downloading etc.
+                CaffeineToggle(fontsize=21),
                 widget.Spacer(length=10),
                 widget.KeyboardLayout(
                     configured_keyboards=["us", "us intl", "pl"],
                     display_map={"us": "🇺🇸", "us intl": "🇪🇺", "pl": "🇵🇱"},
                     fontsize=30,
                     mouse_callbacks={
-                        "Button1": lazy.widget[
-                            "keyboardlayout"
-                        ].next_keyboard()
+                        "Button1": lazy.widget["keyboardlayout"].next_keyboard()
                     },
                 ),
                 widget.Spacer(length=10),
                 widget.Clock(
                     format="%Y-%m-%d %A %H:%M:%S",
                     mouse_callbacks={
-                        "Button1": lambda: qtile.cmd_spawn(
-                            "alacritty -e emacs -nw --eval '(progn (calendar))'"
+                        "Button1": lazy.spawn(
+                            f"{terminal} -e emacs -nw --eval '(progn (calendar))'"
                         )
                     },
-                    # mouse_callbacks={
-                    # "Button1": lambda: qtile.cmd_spawn("alacritty --hold -e cal -3")
-                    # },
                 ),
                 widget.Spacer(length=10),
             ],
@@ -573,40 +556,20 @@ screens = [
     ),
 ]
 
-# Drag floating layouts.
-mouse = [
-    Drag(
-        [mod],
-        "Button1",
-        lazy.window.set_position_floating(),
-        start=lazy.window.get_position(),
-    ),
-    Drag(
-        [mod],
-        "Button3",
-        lazy.window.set_size_floating(),
-        start=lazy.window.get_size(),
-    ),
-    Click([mod], "Button2", lazy.window.bring_to_front()),
-]
 
-dgroups_key_binder = None
-dgroups_app_rules = []  # type: List
-follow_mouse_focus = True
-bring_front_click = False
-cursor_warp = True
-
+# ==============================================================================
+# FLOATING WINDOW RULES - dialogs, prompts and misc apps float by default
+# ==============================================================================
 floating_layout = layout.Floating(
     **layout_theme,
     float_rules=[
-        # Run the utility of `xprop` to see the wm class and name of an X client.
         *layout.Floating.default_float_rules,
-        Match(wm_class="confirmreset"),  # gitk
-        Match(wm_class="makebranch"),  # gitk
-        Match(wm_class="maketag"),  # gitk
-        Match(wm_class="ssh-askpass"),  # ssh-askpass
-        Match(title="branchdialog"),  # gitk
-        Match(title="pinentry"),  # GPG key password entry
+        Match(wm_class="confirmreset"),
+        Match(wm_class="makebranch"),
+        Match(wm_class="maketag"),
+        Match(wm_class="ssh-askpass"),
+        Match(title="branchdialog"),
+        Match(title="pinentry"),
         Match(wm_class="flameshot"),
         Match(title="Picture-in-Picture"),
         Match(title="Secure CRAN mirrors"),
@@ -615,21 +578,27 @@ floating_layout = layout.Floating(
     ],
 )
 
-auto_fullscreen = True
-focus_on_window_activation = "smart"
-reconfigure_screens = True
 
-# If things like steam games want to auto-minimize themselves when losing
-# focus, should we respect this or not?
-auto_minimize = True
+# ==============================================================================
+# MISC SETTINGS - window management behaviour
+# ==============================================================================
+dgroups_key_binder = None                    # dgroups disabled (no key rules)
+dgroups_app_rules: list[Any] = []            # no automatic app-to-group rules
+follow_mouse_focus = True                    # focus follows the mouse pointer
+bring_front_click = False                    # don't raise windows on click
+cursor_warp = True                           # warp pointer to focused window
+auto_fullscreen = True                       # windows requesting fullscreen get it
+focus_on_window_activation = "smart"         # only steal focus when needed
+reconfigure_screens = True                   # re-evaluate screens on hotplug
+auto_minimize = True                         # minimize floating windows on focus loss
+wmname = "LG3D"                              # compatibility with Java applications
 
-# XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
-# string besides java UI toolkits; you can see several discussions on the
-# mailing lists, GitHub issues, and other WM documentation that suggest setting
-# this string if your java app doesn't work correctly. We may as well just lie
-# and say that we're a working one by default.
-#
-# We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
-# java that happens to be on java's whitelist.
 
-wmname = "LG3D"
+# ==============================================================================
+# STARTUP - run autostart.sh once when Qtile starts
+# ==============================================================================
+@hook.subscribe.startup_once
+def autostart():
+    autostart_path = os.path.expanduser("~/.config/qtile/autostart.sh")
+    if os.path.exists(autostart_path):
+        subprocess.Popen([autostart_path])
