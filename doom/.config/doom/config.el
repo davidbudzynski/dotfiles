@@ -42,7 +42,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
+(setq org-directory "~/Documents/org/")
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
@@ -78,7 +78,7 @@
 ;; they are implemented.
 
 ;; modeline
-;; I expect most of the documents I work on to be UTF - 8, So I don’t want to
+;; I expect most of the documents I work on to be UTF - 8, So I don't want to
 ;; see that taking up space unless the encoding is something different
 (defun doom-modeline-conditional-buffer-encoding ()
   (setq-local doom-modeline-buffer-encoding
@@ -122,34 +122,27 @@
 (after! persp-mode
   (setq persp-emacsclient-init-frame-behaviour-override "main"))
 
-;; some org settings
-;; (after! org
-;;   (setq
-;;    ;;org-startup-folded 'overview
-;;    org-ellipsis " ▾ "
-;;    ;; log notes and timestamps into a drawer
-;;    org-log-done 'time
-;;    org-log-done 'note
-;;    org-log-into-drawer t
-;;    org-log-redeadline t
-;;    org-log-reschedule t
-;;    org-hide-leading-stars nil
-;;    org-startup-indented nil)
+;; styling the appearance of the org buffer to my liking.
+(defun davids-org-mode-visual()
+  (setq visual-fill-column-width 100
+        display-fill-column-indicator nil
+        ;; display-line-numbers nil)
+        )
+  (visual-fill-column-mode 1))
 
-;;   ;; ignore popup rule for source code mode in org (usually opens in a small
-;;   ;; popup at the bottom of the screen). This will open in as a normal split
-;;   ;; buffer (usually to the right of the original buffer)
+(after! org
+  (setq org-startup-folded 'showeverything ; Start with all text visible
+        ;; org-ellipsis " ▾ "
+        org-hide-emphasis-markers nil      ; Show *bold*, /italics/, etc.
+        org-hide-leading-stars nil         ; Show all asterisks for headings
+        ;; org-startup-indented nil           ; Don't dynamically indent text
+        org-log-into-drawer t
+        org-log-done 'note)
 
-;;   ;; styling the appearance of the org buffer to my liking.
-;;   ;; borrowed many parts from https://www.grszkth.fr/blog/doom-config/
-;;   (defun davids-org-mode-visual()
-;;     (setq visual-fill-column-width 80
-;;           display-fill-column-indicator nil
-;;           ;; visual-fill-column-center-text t
-;;           display-line-numbers nil)
-;;     (visual-fill-column-mode 1)) (set-popup-rule! "^ ?\\*Org Src[* ]" :ignore t))
+  ;; ignore popup rule for source code mode in org
+  (set-popup-rule! "^ ?\\*Org Src[* ]" :ignore t))
 
-;; (add-hook! 'org-mode-hook #'davids-org-mode-visual)
+(add-hook! 'org-mode-hook #'davids-org-mode-visual)
 
 ;; Set column limit
 (setq-default fill-column 80)
